@@ -4,6 +4,7 @@ import sys
 import pandas as pd
 from networksecurity.entity.config import DataIngestionConfig, TrainingPipelineConfig
 from networksecurity.exception.exception import CustomException
+from networksecurity.entity.artifacts import DataIngestionArtifact,DataValidationArtifact
 from dotenv import load_dotenv
 load_dotenv()
 from sklearn.model_selection import train_test_split
@@ -60,12 +61,6 @@ class DataIngestion:
         dataframe=self.fetch_from_database()
         self.save_the_raw_data(dataframe=dataframe)
         self.perform_train_test_split(dataframe=dataframe)
+        Data_ingestion_artifact=DataIngestionArtifact(trained_file_path=self.data_ingestion_config.training_file_path, test_file_path=self.data_ingestion_config.testing_file_path)
+        return Data_ingestion_artifact
 
-
-if __name__=="__main__":
-    training_pipeline_config = TrainingPipelineConfig()
-    data_ingestion_config = DataIngestionConfig(training_pipeline_config)
-    obj=DataIngestion(data_ingestion_config)
-    obj.initiate_data_ingestion()
-
-    
