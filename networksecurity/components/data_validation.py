@@ -14,38 +14,49 @@ from networksecurity.utils.utils import write_yaml_file
 
 class DataValidation:
     def __init__(self,data_validation_config=DataValidationConfig,data_ingestion_artifact=DataIngestionArtifact):
-        self.data_validation_config=data_validation_config
-        self.data_ingestion_artifact=data_ingestion_artifact
+        try:
+            self.data_validation_config=data_validation_config
+            self.data_ingestion_artifact=data_ingestion_artifact
+        except Exception as e:
+            raise CustomException(e,sys)
     
     def displayYamlFile(self):
-        with open(SCHEMA_FILE_PATH, 'r') as file:
-            self.loaded_data = yaml.safe_load(file)
-            return (len(self.loaded_data['columns']))
+        try:
+            with open(SCHEMA_FILE_PATH, 'r') as file:
+                self.loaded_data = yaml.safe_load(file)
+                return (len(self.loaded_data['columns']))
+        except Exception as e:
+            raise CustomException(e,sys)
+        
+
     def detect_dataset_drift(self,base_df,current_df,threshold=0.5):
-        status=True
-        report={}
-        for column in base_df.columns:
-            d1=base_df[column]
-            d2=current_df[column]
-            is_same_dist=ks_2samp(d1,d2)
-            if threshold<=is_same_dist.pvalue:
-                is_found=False
-            else:
-                is_found=True
-                status=False
-            report.update({column:{
-                "p_value":float(is_same_dist.pvalue),
-                "drift_status":is_found
-                
-                }})
-        drift_report_file_path = self.data_validation_config.drift_report_file_path
+        try:
+            status=True
+            report={}
+            for column in base_df.columns:
+                d1=base_df[column]
+                d2=current_df[column]
+                is_same_dist=ks_2samp(d1,d2)
+                if threshold<=is_same_dist.pvalue:
+                    is_found=False
+                else:
+                    is_found=True
+                    status=False
+                report.update({column:{
+                    "p_value":float(is_same_dist.pvalue),
+                    "drift_status":is_found
+                    
+                    }})
+            drift_report_file_path = self.data_validation_config.drift_report_file_path
 
         
         #Create directory
-        dir_path = os.path.dirname(drift_report_file_path)
-        os.makedirs(dir_path,exist_ok=True)
-        write_yaml_file(file_path=drift_report_file_path,content=report)
-        return status
+            dir_path = os.path.dirname(drift_report_file_path)
+            os.makedirs(dir_path,exist_ok=True)
+            write_yaml_file(file_path=drift_report_file_path,content=report)
+            return status
+        except Exception as e:
+            raise CustomException(e,sys)
 
 
     def initiate_data_validation(self):
