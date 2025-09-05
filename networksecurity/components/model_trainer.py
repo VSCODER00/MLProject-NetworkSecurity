@@ -13,7 +13,7 @@ from sklearn.ensemble import (
 )
 from networksecurity.entity.artifacts import DataTransformationArtifact,ModelTrainerArtifact
 from networksecurity.exception.exception import CustomException
-from networksecurity.utils.utils import load_numpy_array_data
+from networksecurity.utils.utils import load_numpy_array_data,saveObj
 from sklearn.model_selection import GridSearchCV
 import joblib
 
@@ -73,6 +73,7 @@ class ModelTrainer:
                     best_model = gs.best_estimator_
             sorted_report = dict(sorted(report.items(), key=lambda item: item[1], reverse=True))
             path = os.path.join("artifacts", "models", f"{best_model_name.replace(' ', '_').lower()}_best.pkl")
+            saveObj("final_model/model.pkl",best_model)
             os.makedirs(os.path.dirname(path), exist_ok=True)
             joblib.dump(best_model, path)
             model_trainer_artifact=ModelTrainerArtifact(path)
