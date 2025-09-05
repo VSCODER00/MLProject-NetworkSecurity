@@ -5,6 +5,7 @@ pymongo
 certifi
 pymongo[srv]
 scikit-learn
-pyyaml
+pyaml
 fastapi 
 uvicorn
+python-multipart
